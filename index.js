@@ -45,7 +45,7 @@ kmeans.clusterize(vectors, { k: parseInt(argv.means || (vectors.length * 0.8), 1
         var values = cluster.clusterInd.map(function (index) {
             return colors[index].value;
         });
-        var showCluster = true;
+        var showCluster = names.length > 1;
         if (argv.find) {
             showCluster = ~names.indexOf(argv.find) ||
                           ~values.indexOf(argv.find);
