@@ -2,19 +2,20 @@
   "name": "color-cluster",
   "version": "0.0.1",
   "description": "",
-  "preferGlobal": true,
+  "main": "index.js",
   "bin": {
-    "color-cluster": "index.js"
+    "color-cluster": "color-cluster"
   },
   "dependencies": {
     "node-kmeans": "~0.0.1",
     "chalk": "~0.3.0",
-    "optimist": "~0.6.0"
+    "optimist": "~0.6.0",
+    "color-string": "~0.1.2",
+    "split": "~0.2.10",
+    "through": "~2.3.4"
   },
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "BSD-2-Clause"
+  "scripts": {},
+  "author": "Tom Ashworth <ta@twitter.com>",
+  "license": "MIT"
 }

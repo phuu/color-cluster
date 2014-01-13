@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var through = require('through');
+var split = require('split');
+var chalk = require('chalk');
+var argv = require('optimist').argv;
+var colorString = require('color-string');
+var colorCluster = require('./');
+
+if (argv._.length) {
+    var raw = argv._.reduce(function (memo, filename) {
+        return memo + '\n' + readSync(filename);
+    }, '');
+    goGoGadgetCluster(raw, function (err, data) {
+        if (err) throw err;
+        console.log(JSON.stringify(data));
+    });
+} else {
+    process.stdin
+      .pipe(split())
+      .pipe(through(clusterFile))
+      .pipe(process.stdout);
+}
+
+function clusterFile(filename) {
+    read(filename, function (err, raw) {
+        if (err) throw err;
+        goGoGadgetCluster(raw, function (err, data) {
+            if (err) throw err;
+            this.queue(JSON.stringify(data) + '\n');
+        }.bind(this));
+    }.bind(this));
+}
+
+
+function goGoGadgetCluster(raw, cb) {
+    cb = cb || function () {};
+    var colors = colorCluster.extractColors(raw);
+    colorCluster.clusterColors(colors, { means: argv.means }, function (err, clusters) {
+        if (err) return cb(err);
+        var data = clusters.map(function (cluster) {
+            return {
+                colors: cluster.cluster.map(rgbToHex),
+                centre: rgbToHex(cluster.centroid.map(properParseInt))
+            }
+        });
+
+        return cb(null, data);
+    });
+}
+
+function rgbToHex(rgb) {
+    return colorString.hexString(rgb);
+}
+
+function properParseInt(value) {
+    return parseInt(value, 10);
+}
+
+function read(filename, cb) {
+    return fs.readFile(filename, { encoding: 'utf8' }, cb);
+}
+
+function readSync(filename) {
+    return fs.readFileSync(filename, { encoding: 'utf8' });
+}
